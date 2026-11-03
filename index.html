@@ -1,24 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dheeraj Gundapuneni - Personal AI Voicebot</title>
-    <style>
-        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f4f6f9; margin: 0; }
-        .container { text-align: center; padding: 30px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h2>Dheeraj Gundapuneni</h2>
-        <p>100x AI Agent Team - Voicebot Interview Stage</p>
-
-        <!-- PASTE YOUR SARVAM.AI WIDGET CODE DIRECTLY BELOW THIS LINE -->
-        <script src="https://sarvam.ai"></script>
-        <sarvam-voice-agent agent-id="YOUR_ACTUAL_AGENT_ID_HERE"></sarvam-voice-agent>
-
-    </div>
+<html>
+<head><title>Dheeraj's 100x Interview Bot</title></head>
+<body style="font-family:sans-serif;text-align:center;margin-top:20vh">
+  <h2>Talk to Dheeraj's 100x Interview Bot</h2>
+  <p>Click the button at the bottom-right and allow the microphone.</p>
+  <script>
+    var assistant = "5ec1bb38-90f2-47b5-8162-82c2373f2f04";
+    var apiKey = "065cc7b1-2408-4b4e-986c-dd39c649af49";
+    (function (d, t) {
+      var g = document.createElement(t), s = d.getElementsByTagName(t)[0];
+      g.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
+      g.defer = true; g.async = true; s.parentNode.insertBefore(g, s);
+      g.onload = function () { window.vapiSDK.run({ apiKey: apiKey, assistant: assistant }); };
+    })(document, "script");
+  </script>
 </body>
 </html>
 
