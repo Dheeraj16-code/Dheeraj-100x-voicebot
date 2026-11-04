@@ -1,18 +1,98 @@
 <!DOCTYPE html>
-<html>
-<head><title>Dheeraj's 100x Interview Bot</title></head>
-<body style="font-family:sans-serif;text-align:center;margin-top:20vh">
-  <h2>Talk to Dheeraj's 100x Interview Bot</h2>
-  <p>Click the button at the bottom-right and allow the microphone.</p>
-  <script>
-    var assistant = "5ec1bb38-90f2-47b5-8162-82c2373f2f04";
-    var apiKey = "065cc7b1-2408-4b4e-986c-dd39c649af49";
-    (function (d, t) {
-      var g = document.createElement(t), s = d.getElementsByTagName(t)[0];
-      g.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
-      g.defer = true; g.async = true; s.parentNode.insertBefore(g, s);
-      g.onload = function () { window.vapiSDK.run({ apiKey: apiKey, assistant: assistant }); };
-    })(document, "script");
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dheeraj's 100 Interview Bot</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f5f7fb; margin:0; color:#222; }
+    .wrap { max-width:560px; margin:0 auto; padding:24px 16px; text-align:center; }
+    h1 { font-size:24px; margin-bottom:6px; }
+    p.sub { color:#555; margin-top:0; }
+    button { border:0; border-radius:8px; padding:12px 20px; font-size:16px; cursor:pointer; }
+    #callBtn { background:#2563eb; color:#fff; }
+    #callBtn.live { background:#dc2626; }
+    #status { margin:10px 0; color:#555; font-size:14px; }
+    #chat { background:#fff; border-radius:10px; height:280px; overflow-y:auto; padding:12px; text-align:left; border:1px solid #e3e7ef; }
+    .msg { margin:8px 0; padding:8px 12px; border-radius:10px; max-width:85%; }
+    .user { background:#dbeafe; margin-left:auto; }
+    .bot { background:#eef0f4; }
+    .row { display:flex; gap:8px; margin-top:12px; }
+    #txt { flex:1; padding:12px; font-size:16px; border:1px solid #cfd5e2; border-radius:8px; }
+    #sendBtn { background:#16a34a; color:#fff; }
+    button:disabled { opacity:.5; cursor:not-allowed; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Talk to Dheeraj's AI Interview Bot</h1>
+    <p class="sub">Click Start Call, allow the microphone, then speak or type your question.</p>
+    <button id="callBtn">Start Call</button>
+    <div id="status">Not connected</div>
+    <div id="chat"></div>
+    <div class="row">
+      <input id="txt" type="text" placeholder="Type a message (after starting the call)" disabled>
+      <button id="sendBtn" disabled>Send</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import Vapi from "https://esm.sh/@vapi-ai/web@2.3.8";
+
+    const ASSISTANT_ID = "5ec1bb38-90f2-47b5-8162-82c2373f2f04";
+    const PUBLIC_KEY = "065cc7b1-2408-4b4e-986c-dd39c649af49";
+
+    // Indian English male voice
+    const VOICE_OVERRIDE = {
+      voice: { provider: "azure", voiceId: "en-IN-PrabhatNeural" }
+    };
+
+    const vapi = new Vapi(PUBLIC_KEY);
+    const callBtn = document.getElementById("callBtn");
+    const sendBtn = document.getElementById("sendBtn");
+    const txt = document.getElementById("txt");
+    const chat = document.getElementById("chat");
+    const statusEl = document.getElementById("status");
+    let live = false;
+
+    function addMsg(role, text) {
+      const d = document.createElement("div");
+      d.className = "msg " + (role === "user" ? "user" : "bot");
+      d.textContent = text;
+      chat.appendChild(d);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function setLive(v) {
+      live = v;
+      callBtn.textContent = v ? "End Call" : "Start Call";
+      callBtn.classList.toggle("live", v);
+      txt.disabled = !v;
+      sendBtn.disabled = !v;
+      statusEl.textContent = v ? "Connected - speak or type" : "Not connected";
+    }
+
+    callBtn.onclick = () => {
+      if (live) { vapi.stop(); }
+      else { statusEl.textContent = "Connecting..."; vapi.start(ASSISTANT_ID, VOICE_OVERRIDE); }
+    };
+
+    function sendText() {
+      const t = txt.value.trim();
+      if (!t || !live) return;
+      vapi.send({ type: "add-message", message: { role: "user", content: t } });
+      addMsg("user", t);
+      txt.value = "";
+    }
+    sendBtn.onclick = sendText;
+    txt.addEventListener("keydown", e => { if (e.key === "Enter") sendText(); });
+
+    vapi.on("call-start", () => setLive(true));
+    vapi.on("call-end", () => setLive(false));
+    vapi.on("error", e => { console.error(e); statusEl.textContent = "Error - press F12 and check the console"; setLive(false); });
+    vapi.on("message", m => {
+      if (m.type === "transcript" && m.transcriptType === "final") addMsg(m.role, m.transcript);
+    });
   </script>
 </body>
 </html>
