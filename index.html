@@ -52,12 +52,20 @@
     // OPTIONAL: paste an ElevenLabs voice ID here for a more human voice (used for both languages)
     const ELEVEN_VOICE_ID = "";
 
+    // How the voice should say the name. If the voice says it wrongly, change to "Dheeraaj" or "Dhee-raj"
+    const SPOKEN_NAME = "Dheeraj";
+
     const CONFIG = {
       en: {
-        firstMessage: "Hi, my name is Dheeraj Gundapuneni, you can call me Dheeru. Ask me anything about my background and projects.",
-        transcriber: { provider: "deepgram", model: "nova-2", language: "en-IN" },
+        firstMessage: `Hi, my name is ${SPOKEN_NAME} Gundapuneni, you can call me Dheeru. Ask me anything about my background and projects.`,
+        transcriber: {
+          provider: "deepgram",
+          model: "nova-2",
+          language: "en-IN",
+          keywords: ["Dheeraj:5", "Gundapuneni:5", "Dheeru:5"]
+        },
         azureVoice: "en-IN-PrabhatNeural",
-        note: "Your name is Dheeraj Gundapuneni, also called Dheeru. You are Dheeraj himself, speaking in first person. Never use any other name such as Dinesh or Dheeras. Reply only in natural, simple Indian English, in 1 to 3 short sentences, like a friendly young engineer from Hyderabad. Sound human and relaxed. Use small natural fillers like 'so', 'actually', 'see'. Never sound like you are reading."
+        note: "Your name is Dheeraj Gundapuneni, also called Dheeru. You are Dheeraj himself, speaking in first person. Never use any other name such as Dinesh or Dheeras. If the user's text spells your name differently, still treat it as Dheeraj. Reply only in natural, simple Indian English, in 1 to 3 short sentences, like a friendly young engineer from Hyderabad. Sound human and relaxed. Use small natural fillers like 'so', 'actually', 'see'. Never sound like you are reading."
       },
       te: {
         firstMessage: "నమస్కారం! నా పేరు ధీరజ్ గుండపునేని, నన్ను ధీరు అని పిలవచ్చు. నా గురించి ఏమైనా అడగండి.",
@@ -149,3 +157,4 @@
   </script>
 </body>
 </html>
+   
