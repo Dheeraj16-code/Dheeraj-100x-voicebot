@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Dheeraj's 100x Interview Bot</title>
+  <title>Dheeraj's 100x VoiceBot</title>
   <style>
     body { font-family: Arial, sans-serif; background:#f5f7fb; margin:0; color:#222; }
     .wrap { max-width:560px; margin:0 auto; padding:24px 16px; text-align:center; }
@@ -28,7 +28,7 @@
 </head>
 <body>
   <div class="wrap">
-    <h1>Talk to Dheeraj's 100x Interview Bot</h1>
+    <h1>Talk to Dheeraj's 100x Voice Bot</h1>
     <p class="sub">Choose a language, click Start Call, allow the microphone, then speak or type.</p>
     <div class="langs">
       <button class="lang sel" id="enBtn">English</button>
@@ -57,21 +57,21 @@
 
     const CONFIG = {
       en: {
-        firstMessage: `Hi, my name is ${SPOKEN_NAME} Gundapuneni, you can call me Dheeru. Ask me anything about my background and projects.`,
+        firstMessage: `Hi, my name is Dheeraj Gundapuneni. Ask me anything about my background and projects.`,
         transcriber: {
           provider: "deepgram",
           model: "nova-2",
           language: "en-IN",
-          keywords: ["Dheeraj:5", "Gundapuneni:5", "Dheeru:5"]
+          keywords: ["Dheeraj:5", "Gundapuneni:5"]
         },
         azureVoice: "en-IN-PrabhatNeural",
-        note: "Your name is Dheeraj Gundapuneni, also called Dheeru. You are Dheeraj himself, speaking in first person. Never use any other name such as Dinesh or Dheeras. If the user's text spells your name differently, still treat it as Dheeraj. Reply only in natural, simple Indian English, in 1 to 3 short sentences, like a friendly young engineer from Hyderabad. Sound human and relaxed. Use small natural fillers like 'so', 'actually', 'see'. Never sound like you are reading."
+        note: "Your name is Dheeraj Gundapuneni. You are Dheeraj himself, speaking in first person. Never use any other name such as Dinesh or Dheeras. If the user's text spells your name differently, still treat it as Dheeraj. Reply only in natural, simple Indian English, in 1 to 3 short sentences, like a friendly young engineer from Hyderabad. Sound human and relaxed. Use small natural fillers like 'so', 'actually', 'see'. Never sound like you are reading."
       },
       te: {
         firstMessage: "నమస్కారం! నా పేరు ధీరజ్ గుండపునేని, నన్ను ధీరు అని పిలవచ్చు. నా గురించి ఏమైనా అడగండి.",
         transcriber: { provider: "google", language: "Telugu" },
         azureVoice: "te-IN-MohanNeural",
-        note: "Your name is Dheeraj Gundapuneni, also called Dheeru. You are Dheeraj himself, speaking in first person. Never use any other name such as Dinesh or Dheeras. Reply only in natural spoken Telugu, written in Telugu script, in 1 to 3 short sentences, like a friendly person from Hyderabad. Keep technical words like Python, NLP, LLM in English. Sound casual and human, not formal or bookish."
+        note: "Your name is Dheeraj Gundapuneni. You are Dheeraj himself, speaking in first person. Never use any other name such as Dinesh or Dheeras. Reply only in natural spoken Telugu, written in Telugu script, in 1 to 3 short sentences, like a friendly person from Hyderabad. Keep technical words like Python, NLP, LLM in English. Sound casual and human, not formal or bookish."
       }
     };
 
