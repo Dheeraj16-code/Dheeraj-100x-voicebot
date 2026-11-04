@@ -10,10 +10,13 @@
     h1 { font-size:24px; margin-bottom:6px; }
     p.sub { color:#555; margin-top:0; }
     button { border:0; border-radius:8px; padding:12px 20px; font-size:16px; cursor:pointer; }
+    .langs { display:flex; gap:8px; justify-content:center; margin:12px 0; }
+    .lang { background:#e5e7eb; color:#222; }
+    .lang.sel { background:#111827; color:#fff; }
     #callBtn { background:#2563eb; color:#fff; }
     #callBtn.live { background:#dc2626; }
     #status { margin:10px 0; color:#555; font-size:14px; }
-    #chat { background:#fff; border-radius:10px; height:280px; overflow-y:auto; padding:12px; text-align:left; border:1px solid #e3e7ef; }
+    #chat { background:#fff; border-radius:10px; height:260px; overflow-y:auto; padding:12px; text-align:left; border:1px solid #e3e7ef; }
     .msg { margin:8px 0; padding:8px 12px; border-radius:10px; max-width:85%; }
     .user { background:#dbeafe; margin-left:auto; }
     .bot { background:#eef0f4; }
@@ -24,9 +27,13 @@
   </style>
 </head>
 <body>
-  <div class="wrap"
+  <div class="wrap">
     <h1>Talk to Dheeraj's 100x Interview Bot</h1>
-    <p class="sub">Click Start Call, allow the microphone, then speak or type your question.</p>
+    <p class="sub">Choose a language, click Start Call, allow the microphone, then speak or type.</p>
+    <div class="langs">
+      <button class="lang sel" id="enBtn">English</button>
+      <button class="lang" id="teBtn">తెలుగు</button>
+    </div>
     <button id="callBtn">Start Call</button>
     <div id="status">Not connected</div>
     <div id="chat"></div>
@@ -42,18 +49,43 @@
     const ASSISTANT_ID = "5ec1bb38-90f2-47b5-8162-82c2373f2f04";
     const PUBLIC_KEY = "065cc7b1-2408-4b4e-986c-dd39c649af49";
 
-    // Indian English male voice
-    const VOICE_OVERRIDE = {
-      voice: { provider: "azure", voiceId: "en-IN-PrabhatNeural" }
+    // OPTIONAL: paste an ElevenLabs voice ID here for a more human voice (used for both languages)
+    const ELEVEN_VOICE_ID = "";
+
+    const CONFIG = {
+      en: {
+        firstMessage: "Hi, I'm Dheeraj. Ask me anything about my background and projects.",
+        transcriber: { provider: "deepgram", model: "nova-2", language: "en-IN" },
+        azureVoice: "en-IN-PrabhatNeural",
+        note: "Reply only in natural, simple Indian English, in 1 to 3 short sentences, like a friendly young engineer from Hyderabad. Sound human and relaxed. Use small natural fillers like 'so', 'actually', 'see'. Never sound like you are reading."
+      },
+      te: {
+        firstMessage: "నమస్కారం! నేను ధీరజ్ ని. నా గురించి ఏమైనా అడగండి.",
+        transcriber: { provider: "google", language: "Telugu" },
+        azureVoice: "te-IN-MohanNeural",
+        note: "Reply only in natural spoken Telugu, written in Telugu script, in 1 to 3 short sentences, like a friendly person from Hyderabad. Keep technical words like Python, NLP, LLM in English. Sound casual and human, not formal or bookish."
+      }
     };
 
+    let lang = "en";
     const vapi = new Vapi(PUBLIC_KEY);
     const callBtn = document.getElementById("callBtn");
     const sendBtn = document.getElementById("sendBtn");
     const txt = document.getElementById("txt");
     const chat = document.getElementById("chat");
     const statusEl = document.getElementById("status");
+    const enBtn = document.getElementById("enBtn");
+    const teBtn = document.getElementById("teBtn");
     let live = false;
+
+    function pickLang(l) {
+      if (live) return;
+      lang = l;
+      enBtn.classList.toggle("sel", l === "en");
+      teBtn.classList.toggle("sel", l === "te");
+    }
+    enBtn.onclick = () => pickLang("en");
+    teBtn.onclick = () => pickLang("te");
 
     function addMsg(role, text) {
       const d = document.createElement("div");
@@ -69,12 +101,30 @@
       callBtn.classList.toggle("live", v);
       txt.disabled = !v;
       sendBtn.disabled = !v;
+      enBtn.disabled = v;
+      teBtn.disabled = v;
       statusEl.textContent = v ? "Connected - speak or type" : "Not connected";
     }
 
+    function buildOverrides() {
+      const c = CONFIG[lang];
+      const voice = ELEVEN_VOICE_ID
+        ? { provider: "11labs", voiceId: ELEVEN_VOICE_ID, model: "eleven_multilingual_v2", stability: 0.4, similarityBoost: 0.8 }
+        : { provider: "azure", voiceId: c.azureVoice };
+      return {
+        firstMessage: c.firstMessage,
+        transcriber: c.transcriber,
+        voice: voice,
+        maxDurationSeconds: 300,
+        backchannelingEnabled: true,
+        responseDelaySeconds: 0.3
+      };
+    }
+
     callBtn.onclick = () => {
-      if (live) { vapi.stop(); }
-      else { statusEl.textContent = "Connecting..."; vapi.start(ASSISTANT_ID, VOICE_OVERRIDE); }
+      if (live) { vapi.stop(); return; }
+      statusEl.textContent = "Connecting...";
+      vapi.start(ASSISTANT_ID, buildOverrides());
     };
 
     function sendText() {
@@ -87,7 +137,10 @@
     sendBtn.onclick = sendText;
     txt.addEventListener("keydown", e => { if (e.key === "Enter") sendText(); });
 
-    vapi.on("call-start", () => setLive(true));
+    vapi.on("call-start", () => {
+      setLive(true);
+      vapi.send({ type: "add-message", message: { role: "system", content: CONFIG[lang].note } });
+    });
     vapi.on("call-end", () => setLive(false));
     vapi.on("error", e => { console.error(e); statusEl.textContent = "Error - press F12 and check the console"; setLive(false); });
     vapi.on("message", m => {
@@ -96,4 +149,3 @@
   </script>
 </body>
 </html>
-
